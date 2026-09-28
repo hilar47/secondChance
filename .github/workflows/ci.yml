@@ -1,31 +1,65 @@
-name: CI
+name: CI/CD
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main]
   pull_request:
-    branches: [main, develop]
+    branches: [main]
+  workflow_dispatch:
 
 jobs:
-  test:
+  build-test:
     runs-on: ubuntu-latest
+    services:
+      mongo:
+        image: mongo:7
+        ports: ["27017:27017"]
+        options: >-
+          --health-cmd "mongosh --quiet --eval 'db.adminCommand(\"ping\").ok'"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      MONGO_URL: mongodb://localhost:27017
+      MONGO_DB: secondChance
+      JWT_SECRET: ci-secret
+      PORT: 3060
     defaults:
       run:
-        working-directory: backend
+        working-directory: secondChance-backend
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
-          cache-dependency-path: backend/package.json
-      - run: npm install
-      - run: npm test
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Verify application modules load
+        run: npm run check
+
+      - name: Import 16 seed items into MongoDB
+        run: npm run import
+
+      - name: Start API in the background
+        run: |
+          nohup node app.js > ../api.log 2>&1 &
+          for i in $(seq 1 20); do curl -sf http://localhost:3060/health && break; sleep 1; done
+
+      - name: Run API smoke tests
+        run: bash ../scripts/smoke.sh
+
+      - name: Show API log
+        if: always()
+        run: cat ../api.log || true
 
   docker:
     runs-on: ubuntu-latest
-    needs: test
+    needs: build-test
     steps:
-      - uses: actions/checkout@v4
-      - name: Build backend image
-        run: docker build -t secondchance-api ./backend
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Build Docker image
+        run: docker build -t secondchance-api ./secondChance-backend

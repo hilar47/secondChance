@@ -1,86 +1,33 @@
 # ♻️ SecondChance
 
-A platform that connects people who want to **give away** household items with people who prefer to **reuse** and find things for free.
+Give household items you no longer need a new home, or find free items instead of buying new.
+Node.js · Express · MongoDB (native driver) · JWT · multer · natural · Docker · GitHub Actions
 
-**Stack:** Node.js 20 · Express 4 · MongoDB 7 (Mongoose) · JWT auth · React frontend (provided) · Docker · GitHub Actions
-
-## Features
-* Secure registration & login (bcrypt, JWT, lockout, rate limiting)
-* Item listings with categories, condition, tags, images, GeoJSON location
-* Full-text search, filters, "near me" radius search, pagination
-* Concurrency-safe claim workflow (`available → reserved → given`)
-* Reviews & ratings between giver and receiver, with atomic rating aggregates
-* Input validation on every route, consistent error format
-* Automated tests (Jest + Supertest + in-memory MongoDB) and CI
-
-## Repository layout
 ```
-secondchance/
-├── backend/            Express API (src/, tests/, scripts/, Dockerfile)
-├── frontend/           Put the provided React app here (+ Dockerfile, nginx.conf)
-├── docs/               Architecture, user stories, API reference, Agile/DevOps
-├── .github/            CI workflow, PR + issue templates
-├── docker-compose.yml
-└── .env.example
+secondChance-backend/
+  app.js                         Express app, mounts all routes
+  models/db.js                   connectToDatabase()
+  routes/secondChanceItemsRoutes.js   items CRUD + image upload
+  routes/searchRoutes.js         search & filter
+  routes/authRoutes.js           register / login / update
+  sentiment/index.js             sentiment microservice (natural)
+  util/import-mongo/             seed script + secondChanceItems.json (16 items)
+  public/                        landing page + browse page + images
+scripts/                         capture_outputs.sh, smoke.sh, create_issues.sh
+user-story.md                    user story template
 ```
 
-## Quick start
-
-### Option A – Docker (recommended)
+## Run locally
 ```bash
-cp .env.example .env          # set JWT_SECRET to a long random value
-docker compose up --build     # MongoDB + API on http://localhost:5000
-# with the React frontend copied into ./frontend:
-docker compose --profile full up --build     # UI on http://localhost:3000
+docker run -d --name mongo -p 27017:27017 mongo:7
+cd secondChance-backend
+cp .env.example .env && npm install
+npm run import      # imports 16 items
+npm start           # http://localhost:3060
 ```
-Seed demo data (optional):
-```bash
-docker compose exec api node scripts/seed.js     # alice@example.com / Password123
-```
+Or everything in Docker: `cp .env.example .env && docker compose up --build` then
+`docker compose exec api npm run import`.
 
-### Option B – Local
-```bash
-cd backend
-cp .env.example .env
-npm install
-# needs a running MongoDB, e.g.:  docker run -d -p 27017:27017 mongo:7
-npm run seed      # optional demo data
-npm run dev       # http://localhost:5000
-```
+See [docs/API.md](docs/API.md), [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), [docs/USER_STORIES.md](docs/USER_STORIES.md), [docs/AGILE_DEVOPS.md](docs/AGILE_DEVOPS.md).
 
-### Tests
-```bash
-cd backend && npm install && npm test
-```
-The first run downloads a MongoDB binary for `mongodb-memory-server`; no local database needed.
-
-## Configuration
-| Variable | Default | Description |
-|---|---|---|
-| `PORT` | 5000 | API port |
-| `MONGO_URI` | `mongodb://localhost:27017/secondchance` | Database connection |
-| `JWT_SECRET` | – (**required in production**) | Token signing key |
-| `JWT_EXPIRES_IN` | `1d` | Token lifetime |
-| `BCRYPT_ROUNDS` | 12 | Password hashing cost |
-| `CORS_ORIGIN` | `http://localhost:3000` | Comma-separated allowed origins |
-
-## Documentation
-* [Architecture](docs/ARCHITECTURE.md)
-* [User stories](docs/USER_STORIES.md)
-* [API reference](docs/API.md)
-* [Frontend integration](docs/FRONTEND_INTEGRATION.md)
-* [Agile & DevOps practices](docs/AGILE_DEVOPS.md)
-
-## Publishing to GitHub
-```bash
-cd secondchance
-git init -b main
-git add .
-git commit -m "feat: initial SecondChance backend"
-git remote add origin https://github.com/<your-user>/secondchance.git
-git push -u origin main
-```
-Tip: run `cd backend && npm install` once and commit the generated `package-lock.json` for reproducible Docker/CI builds.
-
-## License
-MIT
+License: MIT

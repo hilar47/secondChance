@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Browse items – SecondChance</title>
+  <style>
+    body { margin:0; font-family: system-ui, sans-serif; background:#f4faf6; color:#16301f; }
+    header { padding:16px 24px; display:flex; gap:16px; align-items:center; }
+    header a { color:#1f7a4d; text-decoration:none; font-weight:700; }
+    form { display:flex; gap:8px; flex-wrap:wrap; padding:0 24px 16px; }
+    input, select, button { padding:9px 12px; border:1px solid #b8d4c2; border-radius:8px; font-size:1rem; }
+    button { background:#1f7a4d; color:#fff; border:none; cursor:pointer; }
+    #grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:16px; padding:0 24px 32px; }
+    .card { background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,.1); }
+    .card img { width:100%; height:130px; object-fit:cover; background:#e7f3ec; }
+    .card div { padding:12px; }
+    .card h3 { margin:0 0 6px; font-size:1.05rem; }
+    .meta { font-size:.85rem; opacity:.75; }
+    #msg { padding:0 24px; }
+  </style>
+</head>
+<body>
+  <header><a href="index.html">♻️ SecondChance</a><span>Browse free items</span></header>
+  <form id="f">
+    <input id="name" placeholder="Search (e.g. chair)" />
+    <select id="category"><option value="">All categories</option><option>Living</option><option>Bedroom</option><option>Bathroom</option><option>Kitchen</option><option>Office</option></select>
+    <select id="condition"><option value="">Any condition</option><option>New</option><option>Like New</option><option>Good</option><option>Fair</option><option>Poor</option></select>
+    <button>Search</button>
+  </form>
+  <p id="msg"></p>
+  <section id="grid"></section>
+  <script>
+    const grid = document.getElementById('grid'), msg = document.getElementById('msg');
+    async function load() {
+      const p = new URLSearchParams();
+      for (const k of ['name', 'category', 'condition']) { const v = document.getElementById(k).value.trim(); if (v) p.set(k, v); }
+      msg.textContent = 'Loading…';
+      try {
+        const res = await fetch('/api/secondchance/search?' + p);
+        const items = await res.json();
+        grid.replaceChildren();
+        msg.textContent = items.length + ' item(s) found';
+        for (const it of items) {
+          const card = document.createElement('article'); card.className = 'card';
+          const img = document.createElement('img'); img.src = it.image; img.alt = it.name;
+          const box = document.createElement('div');
+          const h = document.createElement('h3'); h.textContent = it.name;
+          const m = document.createElement('div'); m.className = 'meta'; m.textContent = it.category + ' · ' + it.condition + ' · ' + it.age_years + ' yr';
+          const d = document.createElement('p'); d.textContent = it.description;
+          box.append(h, m, d); card.append(img, box); grid.append(card);
+        }
+      } catch (e) { msg.textContent = 'Could not load items.'; }
+    }
+    document.getElementById('f').addEventListener('submit', (e) => { e.preventDefault(); load(); });
+    load();
+  </script>
+</body>
+</html>
