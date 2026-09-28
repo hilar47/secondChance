@@ -1,0 +1,22 @@
+Inserted 16 documents into secondChance.secondChanceItems
+inserted_items: 16 ids
+┌─────────┬──────┬────────────────────────────┬────────────┬────────────┐
+│ (index) │ id   │ name                       │ category   │ condition  │
+├─────────┼──────┼────────────────────────────┼────────────┼────────────┤
+│ 0       │ '1'  │ 'Wooden dining chair'      │ 'Living'   │ 'Good'     │
+│ 1       │ '2'  │ 'Three-seat fabric sofa'   │ 'Living'   │ 'Fair'     │
+│ 2       │ '3'  │ 'Glass coffee table'       │ 'Living'   │ 'Like New' │
+│ 3       │ '4'  │ 'Floor standing lamp'      │ 'Living'   │ 'Good'     │
+│ 4       │ '5'  │ 'Single bed frame'         │ 'Bedroom'  │ 'Good'     │
+│ 5       │ '6'  │ 'Bedside table'            │ 'Bedroom'  │ 'Like New' │
+│ 6       │ '7'  │ 'Wardrobe with mirror'     │ 'Bedroom'  │ 'Fair'     │
+│ 7       │ '8'  │ 'Bathroom storage cabinet' │ 'Bathroom' │ 'Good'     │
+│ 8       │ '9'  │ 'Laundry basket set'       │ 'Bathroom' │ 'New'      │
+│ 9       │ '10' │ 'Non-stick frying pan set' │ 'Kitchen'  │ 'Like New' │
+│ 10      │ '11' │ 'Microwave oven'           │ 'Kitchen'  │ 'Good'     │
+│ 11      │ '12' │ 'Kitchen bar stool'        │ 'Kitchen'  │ 'Good'     │
+│ 12      │ '13' │ 'Office desk chair'        │ 'Office'   │ 'Good'     │
+│ 13      │ '14' │ 'Standing desk frame'      │ 'Office'   │ 'Like New' │
+│ 14      │ '15' │ 'Bookshelf, 5 shelves'     │ 'Office'   │ 'Fair'     │
+│ 15      │ '16' │ 'Monitor stand'            │ 'Office'   │ 'New'      │
+└─────────┴──────┴────────────────────────────┴────────────┴────────────┘

@@ -1,0 +1,17 @@
+$ curl -G http://localhost:3060/api/secondchance/search --data-urlencode name=chair --data-urlencode category=Living
+[
+  {
+    "id": "1",
+    "name": "Wooden dining chair",
+    "category": "Living",
+    "condition": "Good",
+    "description": "Solid oak, one small scratch on the back.",
+    "age_years": 3,
+    "age_days": 1095,
+    "zipcode": "10001",
+    "image": "/images/placeholder.svg",
+    "posted_by": "SecondChance Demo",
+    "owner": "demo@secondchance.app",
+    "date_added": 1700086400
+  }
+]
